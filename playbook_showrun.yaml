@@ -1,0 +1,25 @@
+---
+- name: Backup Cisco Router Running Configuration
+  hosts: all
+  gather_facts: false
+  connection: network_cli
+
+  vars:
+    student_id: "66070276"
+
+  tasks:
+    - name: Execute show running-config command
+      cisco.ios.ios_command:
+        commands:
+          - show running-config
+      register: config_output
+
+    - name: Save configuration to a local file
+      copy:
+        content: "{{ config_output.stdout[0] }}"
+        dest: "/home/ubuntu/IPA2024-Final/show_run_{{ student_id }}_{{ inventory_hostname }}.txt"
+      delegate_to: localhost
+
+    - name: Print router name for Python script
+      debug:
+        msg: "Router name: {{ inventory_hostname }}"
